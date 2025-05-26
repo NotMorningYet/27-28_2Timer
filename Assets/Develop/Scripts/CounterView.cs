@@ -1,13 +1,14 @@
 using TMPro;
 using UnityEngine;
 
-public class UICounter : MonoBehaviour, ITimerUI
+public class CounterView : MonoBehaviour
 {
-    [SerializeField] private Timer _timer;
     [SerializeField] private TMP_Text _textCount;
+    private Timer _timer;
 
-    private void Awake()
+    public void Initialize(Timer timer)
     {
+        _timer = timer;
         _textCount.text = _timer.TimerStartValue.ToString("0.0");
         _timer.TimerValueChanged += OnTimerValueChanged;
     }

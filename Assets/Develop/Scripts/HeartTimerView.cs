@@ -1,18 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HeartTimerUI : MonoBehaviour, ITimerUI
+public class HeartTimerView : MonoBehaviour
 {
     [SerializeField] private Heart _heartPrefab;
-    [SerializeField] private Timer _timer;
+    private Timer _timer;
 
     private int _maxNumberOfHearts;
     private int _numberOfHearts;
 
     private List<Heart> _heartList = new List<Heart>();
-
-    private void Awake()
+    
+    public void Initialize(Timer timer)
     {
+        _timer = timer;
         _maxNumberOfHearts = (int)_timer.TimerStartValue;
         _numberOfHearts = _maxNumberOfHearts;
         _timer.TimerValueChanged += OnTimerValueChanged;

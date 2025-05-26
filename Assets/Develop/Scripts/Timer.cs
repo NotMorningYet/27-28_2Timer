@@ -1,55 +1,79 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
-public class Timer : MonoBehaviour
+public class Timer
 {
     public event Action<float> TimerValueChanged;
-    public event Action<bool> TimerModeChanged;
+    public event Action TimerStarted;
+    public event Action TimerReseted;
+    public event Action TimerPaused;
     public event Action TimerExpired;
     
-    [SerializeField] private float _timerStartValue;
+    private float _timerStartValue;
     private float _timeCount;
     private bool _isCounting = false;
+    private MonoBehaviour _coroutineRunner;
+    private Coroutine _timerCoroutine;
+
+    public Timer(float timerStartValue, MonoBehaviour coroutineRunner)
+    {
+        _timerStartValue = timerStartValue;
+        _coroutineRunner = coroutineRunner;
+        _timeCount = _timerStartValue;
+    }
 
     public float TimeCount => _timeCount;
     public bool IsCounting => _isCounting;  
     public float TimerStartValue => _timerStartValue;
 
-    private void Awake()
-    {
-        _timeCount = _timerStartValue;
-    }
-
     public void StartTimer()
     {
-        _isCounting = true;
-        TimerModeChanged?.Invoke(_isCounting);
+        if (!_isCounting)
+        {
+            _isCounting = true;
+            _timerCoroutine = _coroutineRunner.StartCoroutine(TimerProcess());
+            TimerStarted?.Invoke();
+        }
     }
 
     public void ResetTimer()
     {
+        StopTimerCoroutine();
         _isCounting = false;
-        _timeCount = _timerStartValue; 
-        TimerModeChanged?.Invoke(_isCounting);
+        _timeCount = _timerStartValue;
+        TimerReseted?.Invoke();
         TimerValueChanged?.Invoke(_timeCount);
     }
 
     public void PauseTimer()
     {
-        _isCounting = false;
-        TimerModeChanged?.Invoke(_isCounting);
-    }
-
-    private void Update()
-    {
         if (_isCounting)
         {
-            _timeCount -= Time.deltaTime;
+            StopTimerCoroutine();
+            _isCounting = false;
+            TimerPaused?.Invoke();
+        }
+    }
 
-            if (_timeCount <= 0)
-                ExpireTimer();
-            
+    private IEnumerator TimerProcess()
+    {
+        while (_timeCount > 0)
+        {
+            _timeCount -= Time.deltaTime;
             TimerValueChanged?.Invoke(_timeCount);
+            yield return null;
+        }
+
+        ExpireTimer();
+    }
+
+    private void StopTimerCoroutine()
+    {
+        if (_timerCoroutine != null)
+        {
+            _coroutineRunner.StopCoroutine(_timerCoroutine);
+            _timerCoroutine = null;
         }
     }
 
@@ -57,7 +81,7 @@ public class Timer : MonoBehaviour
     {
         _isCounting = false;
         _timeCount = 0;
-        TimerModeChanged?.Invoke(_isCounting);
+        TimerReseted?.Invoke();
         TimerExpired?.Invoke();
     }
 }

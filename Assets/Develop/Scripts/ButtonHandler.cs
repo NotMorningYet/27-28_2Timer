@@ -2,12 +2,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIButtonHandler : MonoBehaviour
+public class ButtonHandler : MonoBehaviour
 {
-    [SerializeField] private Timer _timer;
     [SerializeField] private Button _startPauseButton;
     [SerializeField] private Button _resetButton;
 
+    private Timer _timer;
     private TMP_Text _startPauseButtonText;
     private TMP_Text _resetButtonText;
 
@@ -17,13 +17,17 @@ public class UIButtonHandler : MonoBehaviour
     private readonly string _pauseText = "Pause";
     private readonly string _resetText = "Reset";
 
-    private void Awake()
+    public void Initialize(Timer timer)
     {
+        _timer = timer;
         ButtonTextSetup();
 
-        _timer.TimerModeChanged += OnTimerModeChanged;
+        _timer.TimerStarted += OnTimerStarted;
+        _timer.TimerReseted += OnTimerReseted;
+        _timer.TimerPaused += OnTimerPaused;
         _timer.TimerExpired += OnTimerExpired;
     }
+
 
     public void OnStartPauseButtonClick()
     {
@@ -55,7 +59,9 @@ public class UIButtonHandler : MonoBehaviour
         _resetButtonText.text = _resetText;
     }
 
-    private void OnTimerModeChanged(bool isCounting) => _isCountingMode = isCounting;
+    private void OnTimerStarted() => _isCountingMode = true;
+    private void OnTimerReseted() => _isCountingMode = false;
+    private void OnTimerPaused() => _isCountingMode = false;
 
     private void OnTimerExpired()
     {
@@ -65,7 +71,9 @@ public class UIButtonHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        _timer.TimerModeChanged -= OnTimerModeChanged;
+        _timer.TimerStarted -= OnTimerStarted;
+        _timer.TimerReseted -= OnTimerReseted;
+        _timer.TimerPaused -= OnTimerPaused;
         _timer.TimerExpired -= OnTimerExpired;
     }
 }
