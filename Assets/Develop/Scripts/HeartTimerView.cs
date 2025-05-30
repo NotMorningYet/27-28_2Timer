@@ -16,7 +16,7 @@ public class HeartTimerView : MonoBehaviour
         _timer = timer;
         _maxNumberOfHearts = (int)_timer.TimerStartValue;
         _numberOfHearts = _maxNumberOfHearts;
-        _timer.TimerValueChanged += OnTimerValueChanged;
+        _timer.TimeCount.Changed += OnTimerValueChanged;
 
         FillList();
     }
@@ -52,6 +52,6 @@ public class HeartTimerView : MonoBehaviour
 
     private void OnDestroy()
     {
-        _timer.TimerValueChanged -= OnTimerValueChanged;
+        _timer.TimeCount.Changed -= OnTimerValueChanged;
     }
 }

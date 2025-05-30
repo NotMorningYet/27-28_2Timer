@@ -4,36 +4,35 @@ using UnityEngine;
 
 public class Timer
 {
-    public event Action<float> TimerValueChanged;
+
     public event Action TimerStarted;
     public event Action TimerReseted;
     public event Action TimerPaused;
     public event Action TimerExpired;
     
-    private float _timerStartValue;
-    private float _timeCount;
+    private ReactiveVariable<float> _timerStartValue;
+    private ReactiveVariable<float> _timeCount;
     private bool _isCounting = false;
     private MonoBehaviour _coroutineRunner;
     private Coroutine _timerCoroutine;
 
-    public Timer(float timerStartValue, MonoBehaviour coroutineRunner)
+    public Timer(ReactiveVariable<float> timerStartValue, MonoBehaviour coroutineRunner)
     {
         _timerStartValue = timerStartValue;
         _coroutineRunner = coroutineRunner;
         _timeCount = _timerStartValue;
     }
 
-    public float TimeCount => _timeCount;
+    public ReactiveVariable<float> TimeCount => _timeCount;
+    public float TimerStartValue => _timerStartValue.Value;
     public bool IsCounting => _isCounting;  
-    public float TimerStartValue => _timerStartValue;
 
     public void StartTimer()
     {
         if (!_isCounting)
         {
             _isCounting = true;
-            _timerCoroutine = _coroutineRunner.StartCoroutine(TimerProcess());
-            TimerStarted?.Invoke();
+            _timerCoroutine = _coroutineRunner.StartCoroutine(TimerProcess());            
         }
     }
 
@@ -42,15 +41,13 @@ public class Timer
         StopTimerCoroutine();
         _isCounting = false;
         _timeCount = _timerStartValue;
-        TimerReseted?.Invoke();
-        TimerValueChanged?.Invoke(_timeCount);
+        TimerReseted?.Invoke();        
     }
 
     public void PauseTimer()
     {
         if (_isCounting)
         {
-            StopTimerCoroutine();
             _isCounting = false;
             TimerPaused?.Invoke();
         }
@@ -58,10 +55,9 @@ public class Timer
 
     private IEnumerator TimerProcess()
     {
-        while (_timeCount > 0)
+        while (_timeCount.Value > 0)
         {
-            _timeCount -= Time.deltaTime;
-            TimerValueChanged?.Invoke(_timeCount);
+            _timeCount.Value -= Time.deltaTime;            
             yield return null;
         }
 
@@ -80,7 +76,7 @@ public class Timer
     private void ExpireTimer()
     {
         _isCounting = false;
-        _timeCount = 0;
+        _timeCount.Value = 0;
         TimerReseted?.Invoke();
         TimerExpired?.Invoke();
     }

@@ -10,7 +10,7 @@ public class CounterView : MonoBehaviour
     {
         _timer = timer;
         _textCount.text = _timer.TimerStartValue.ToString("0.0");
-        _timer.TimerValueChanged += OnTimerValueChanged;
+        _timer.TimeCount.Changed += OnTimerValueChanged;
     }
 
     public void OnTimerValueChanged(float count)
@@ -20,6 +20,6 @@ public class CounterView : MonoBehaviour
 
     private void OnDestroy()
     {
-        _timer.TimerValueChanged -= OnTimerValueChanged;
+        _timer.TimeCount.Changed -= OnTimerValueChanged;
     }
 }

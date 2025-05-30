@@ -12,7 +12,7 @@ public class BarTimerView : MonoBehaviour
     {
         _timer = timer;
         _maxTimer = _timer.TimerStartValue;
-        _timer.TimerValueChanged += OnTimerValueChanged;        
+        _timer.TimeCount.Changed += OnTimerValueChanged;        
     }
 
     public void OnTimerValueChanged(float count)
@@ -22,6 +22,6 @@ public class BarTimerView : MonoBehaviour
 
     private void OnDestroy()
     {
-        _timer.TimerValueChanged += OnTimerValueChanged;
+        _timer.TimeCount.Changed += OnTimerValueChanged;
     }
 }
