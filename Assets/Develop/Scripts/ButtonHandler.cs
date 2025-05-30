@@ -11,8 +11,6 @@ public class ButtonHandler : MonoBehaviour
     private TMP_Text _startPauseButtonText;
     private TMP_Text _resetButtonText;
 
-    private bool _isCountingMode;
-
     private readonly string _startText = "Start";
     private readonly string _pauseText = "Pause";
     private readonly string _resetText = "Reset";
@@ -22,16 +20,12 @@ public class ButtonHandler : MonoBehaviour
         _timer = timer;
         ButtonTextSetup();
 
-        _timer.TimerStarted += OnTimerStarted;
-        _timer.TimerReseted += OnTimerReseted;
-        _timer.TimerPaused += OnTimerPaused;
         _timer.TimerExpired += OnTimerExpired;
     }
 
-
     public void OnStartPauseButtonClick()
     {
-        if (_isCountingMode)
+        if (_timer.IsCounting)
         {
             _timer.PauseTimer();
             _startPauseButtonText.text = _startText;
@@ -58,11 +52,6 @@ public class ButtonHandler : MonoBehaviour
         _startPauseButtonText.text = _startText;
         _resetButtonText.text = _resetText;
     }
-
-    private void OnTimerStarted() => _isCountingMode = true;
-    private void OnTimerReseted() => _isCountingMode = false;
-    private void OnTimerPaused() => _isCountingMode = false;
-
     private void OnTimerExpired()
     {
         _startPauseButtonText.text = _startText;
@@ -71,9 +60,6 @@ public class ButtonHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        _timer.TimerStarted -= OnTimerStarted;
-        _timer.TimerReseted -= OnTimerReseted;
-        _timer.TimerPaused -= OnTimerPaused;
         _timer.TimerExpired -= OnTimerExpired;
     }
 }
