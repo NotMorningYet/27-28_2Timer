@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        _timer = new Timer(new ReactiveVariable<float>(_timerStartValue), this);
+        _timer = new Timer(_timerStartValue, this);
         _counterView.Initialize(_timer);
         _barTimerView.Initialize(_timer);
         _heartTimerView.Initialize(_timer);

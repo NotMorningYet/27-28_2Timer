@@ -1,6 +1,6 @@
 using System;
 
-public class ReactiveVariable<T> where T : IEquatable<T>
+public class ReactiveVariable<T> : IReadOnlyReactiveVariable<T> where T : IEquatable<T>
 {
     public event Action<T> Changed;
 
